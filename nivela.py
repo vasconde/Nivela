@@ -10,7 +10,11 @@
 #
 # Author: Vasco Conde (vasconde)
 
+# Nivela Modules
+import LData
 import Adjust
+
+# Others Modules
 import numpy
 
 print("*** Nivela ***")
@@ -31,3 +35,7 @@ print(l)
 a = Adjust.Adjust(l,Cl,False,A)
 
 a.computation()
+
+print("LData")
+
+b = LData.LData()
