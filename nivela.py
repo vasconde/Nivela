@@ -28,6 +28,6 @@ print(A)
 print(Cl)
 print(l)
 
-a = Adjust.Adjust(l,Cl,A)
+a = Adjust.Adjust(l,Cl,False,A)
 
 a.computation()

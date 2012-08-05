@@ -8,15 +8,26 @@ class Adjust:
     para modelo parametrico linear"""
 
     # construtor
-    def __init__ (self, l = numpy.matrix([]), Cl = numpy.matrix([]), A = numpy.matrix([])):
+    def __init__ (self, l = numpy.matrix([]), WorCl = numpy.matrix([]), isW = False, A = numpy.matrix([])):
+        """Args:
+        l - observations matrix [n x 1]
+        WorCl - weight matrix (W) or var and covar of obs (Cl) [n x n]
+        isW - WorCl is W?
+        A - design matrix [n x n_par]"""
         self.l = l      # matriz de obsevacoes
-        self.Cl = Cl    # v&c das observacoes
         self.A = A      # design matrix
         self.var = 1.0  # variancia de referencia apriori
         self.var_ = 1.0 # variancia de referencia aposteriori
-        self.df = 3.0
+        self.df = self.A.shape[0] - self.A.shape[1] # degrees of freedom       
         
-        self.Pl = self.weights() 
+        self.W = numpy.matrix([])
+        self.Cl = numpy.matrix([])
+
+        if isW:
+            self.W = WorCl
+        else:
+            self.Cl = WorCl
+            self.W = self.weights() 
 
     # retorna os pesos em funcao de Cl e var
     def weights(self):
@@ -30,9 +41,9 @@ class Adjust:
 
         A_t = numpy.transpose(self.A)
         
-        N_inv = numpy.linalg.inv(A_t * self.Pl * self.A)
+        N_inv = numpy.linalg.inv(A_t * self.W * self.A)
         
-        self.x = N_inv * A_t * self.Pl * self.l
+        self.x = N_inv * A_t * self.W * self.l
 
         self.v = self.A * self.x - self.l
 
@@ -40,7 +51,7 @@ class Adjust:
 
         self.Cx_ = self.var * N_inv
 
-        self.var_ = (numpy.transpose(self.v) * self.Pl * self.v)/self.df
+        self.var_ = (numpy.transpose(self.v) * self.W * self.v)/self.df
         self.var_ = self.var_[0,0]
         
         self.C_x_ = self.var_ * N_inv
