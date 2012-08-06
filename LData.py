@@ -16,9 +16,8 @@ class LData:
 
         self.gen_design_matrix ()
         self.gen_obs_matrix ()
+        self.gen_Cl_matrix ()
         
-        print(self.n_obs,self.n_ben,self.n_param) # temp
-
 
     # define lista com os nomes dos pontos fixos
     def get_benchmarks_names(self):
@@ -77,7 +76,17 @@ class LData:
                 self.L[i,0] -= self.benchmarks[self.benchmarks_names.index(ob[1])][1]
             i += 1
 
-        print(self.L)
+
+    # gera matriz de variancia e covariancia das observacoes
+    # a partir das incertezas
+    def gen_Cl_matrix (self):
+        
+        self.Cl = numpy.zeros((self.n_obs,self.n_obs))
+
+        i = 0
+        for ob in self.obs:
+            self.Cl[i,i] = ob[3] * ob[3]
+            i += 1
             
 ########### TEMP #############
 

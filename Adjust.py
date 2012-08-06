@@ -55,10 +55,3 @@ class Adjust:
         self.var_ = self.var_[0,0]
         
         self.C_x_ = self.var_ * N_inv
-
-        print("*************")
-        print (self.x)
-        print("*************")        
-        print (self.v)
-
-        print (self.var_)

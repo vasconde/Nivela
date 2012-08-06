@@ -19,23 +19,16 @@ import numpy
 
 print("*** Nivela ***")
 
-l = numpy.matrix([[448.105,5.360,-8.523,-444.944,-3.167,453.477]])
-l = numpy.transpose(l)
 
-l_e = numpy.matrix([[0.006**2,0.004**2,0.005**2,0.003**2,0.004**2,0.012**2]])
-Cl = numpy.zeros((6,6)) 
-numpy.fill_diagonal(Cl,l_e)
+dados = LData.LData()
 
-A = numpy.matrix([[1.0,0,0],[-1,1,0],[0,-1,1],[0,0,-1],[-1,0,1],[0,1,0]])
+aj = Adjust.Adjust(numpy.asmatrix(dados.L),numpy.asmatrix(dados.Cl),False,numpy.asmatrix(dados.A))
+aj.computation()
 
-print(A)
-print(Cl)
-print(l)
 
-a = Adjust.Adjust(l,Cl,False,A)
-
-a.computation()
-
-print("LData")
-
-b = LData.LData()
+print("Parametros:")
+print (aj.x)
+print("Residuos:")        
+print (aj.v)
+print("var aposteriori:")
+print (aj.var_)
