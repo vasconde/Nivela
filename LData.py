@@ -8,15 +8,15 @@ class LData:
 
     def __init__ (self):
 
-        self.temp ()
-
-        print(self.obs)
-        print(self.benchmarks)
+        self.temp () # carrega os dados
 
         self.get_benchmarks_names()
         self.get_parameters_names() # depende da anterior
         self.ref_numbers () # depende da anterior
 
+        self.gen_design_matrix ()
+        self.gen_obs_matrix ()
+        
         print(self.n_obs,self.n_ben,self.n_param) # temp
 
 
@@ -47,8 +47,38 @@ class LData:
         self.n_ben = len(self.benchmarks)
         self.n_param = len(self.param_names)
 
+    # gera a matrix A
+    # para cada observacao verifica e para cada from e to
+    # verifica se nao eh ponto fixo e a seguir coloca -1 ou 1
+    # consuante a posicao na lista de nomes dos param
+    def gen_design_matrix (self):
 
+        self.A = numpy.zeros((self.n_obs,self.n_param))
 
+        i = 0
+        for ob in self.obs:
+            if not(self.benchmarks_names.__contains__(ob[0])):
+                self.A[i,self.param_names.index(ob[0])] = -1
+            if not(self.benchmarks_names.__contains__(ob[1])):
+                self.A[i,self.param_names.index(ob[1])] = 1
+            i += 1
+
+    # gera a matrix de aobservacoes. A esta eh somada o valores dos pontos fixos que sao considerados de constantes
+    def gen_obs_matrix (self):
+
+        self.L = numpy.zeros((self.n_obs,1))
+
+        i = 0
+        for ob in self.obs:
+            self.L[i,0] = ob[2]
+            if self.benchmarks_names.__contains__(ob[0]):
+                self.L[i,0] += self.benchmarks[self.benchmarks_names.index(ob[0])][1]
+            if self.benchmarks_names.__contains__(ob[1]):
+                self.L[i,0] -= self.benchmarks[self.benchmarks_names.index(ob[1])][1]
+            i += 1
+
+        print(self.L)
+            
 ########### TEMP #############
 
     # funcao temporaria
