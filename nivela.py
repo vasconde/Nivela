@@ -23,6 +23,7 @@ print("*** Nivela ***")
 dados = LData.LData()
 
 aj = Adjust.Adjust(numpy.asmatrix(dados.L),numpy.asmatrix(dados.Cl),False,numpy.asmatrix(dados.A))
+
 aj.computation()
 
 
