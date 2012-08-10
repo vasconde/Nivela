@@ -2,13 +2,15 @@
 
 # pacote para calculo matricial
 import numpy
+import math
 
 class LData:
     """Estrutura de dados do nivelamento"""
 
-    def __init__ (self):
+    def __init__ (self, obs, bmarks, distance = False, kilometer_error = []):
 
-        self.temp () # carrega os dados
+        self.obs = obs
+        self.benchmarks = bmarks
 
         self.get_benchmarks_names()
         self.get_parameters_names() # depende da anterior
@@ -16,7 +18,16 @@ class LData:
 
         self.gen_design_matrix ()
         self.gen_obs_matrix ()
-        self.gen_Cl_matrix ()
+
+        if distance:
+            if kilometer_error == []:
+                self.gen_Pl_matrix ()
+            else:
+                self.gen_Cl_matrix_from_dist (kilometer_error)
+        else:
+            self.gen_Cl_matrix ()
+
+
         
 
     # define lista com os nomes dos pontos fixos
@@ -87,19 +98,37 @@ class LData:
         for ob in self.obs:
             self.Cl[i,i] = ob[3] * ob[3]
             i += 1
-            
-########### TEMP #############
 
-    # funcao temporaria
-    def temp (self):
-        self.obs = [['A','B',10.509,0.006],
-                    ['B','C',5.36,0.004],
-                    ['C','D',-8.523,0.005],
-                    ['D','A',-7.348,0.003],
-                    ['B','D',-3.167,0.004],
-                    ['A','C',15.881,0.012]]
+    # gera matriz de pesos das observacoes
+    # a partir dos valores dados
+    def gen_Pl_matrix (self):
         
-        self.benchmarks = [['A',437.596]]        
+        self.Pl = numpy.zeros((self.n_obs,self.n_obs))
 
-# from | to | elev   | error
-# A    | B  | 10.509 | 0.006
+        i = 0
+        for ob in self.obs:
+            self.Pl[i,i] = 1/ob[3]
+            i += 1
+
+    # gera matriz de variancia e covariancia das observacoes
+    # a partir das distancias e erro kilometrico
+    def gen_Cl_matrix_from_dist (self, eKm):
+        
+        self.Cl = numpy.zeros((self.n_obs,self.n_obs))
+
+        i = 0
+        for ob in self.obs:
+            self.Cl[i,i] = math.pow(0.001 * eKm * math.sqrt(0.001 * ob[3]), 2);
+            i += 1
+            
+
+#    ########## DATA EXAMPLE #############
+#                  from | to | elev   | error
+#        self.obs = [['A','B',10.509,0.006],
+#                    ['B','C',5.36,0.004],
+#                    ['C','D',-8.523,0.005],
+#                    ['D','A',-7.348,0.003],
+#                    ['B','D',-3.167,0.004],
+#                    ['A','C',15.881,0.012]]
+#        
+#        self.benchmarks = [['A',437.596]]
